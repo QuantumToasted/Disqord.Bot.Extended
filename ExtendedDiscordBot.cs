@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -15,7 +15,7 @@ namespace Disqord.Bot.Extended
     public abstract class ExtendedDiscordBot : DiscordBot
     {
         private readonly ExtendedDiscordBotConfiguration _configuration;
-        private readonly IDictionary<Type, IEnumerable<IHandler>> _handlerDict;
+        private readonly IDictionary<Type, IEnumerable<IHandler>> _handlerDict; // TODO: Does making this IEnumerable cause multiple enumeration?
 
         protected ExtendedDiscordBot(RestDiscordClient restClient, IPrefixProvider prefixProvider, ExtendedDiscordBotConfiguration configuration = null) 
             : base(restClient, prefixProvider, configuration is null ? new ExtendedDiscordBotConfiguration() : new ExtendedDiscordBotConfiguration
