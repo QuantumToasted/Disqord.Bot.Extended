@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -69,7 +69,7 @@ namespace Disqord.Bot.Extended
                     .BuildServiceProvider());
         }
 
-        public override Task RunAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override async Task RunAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var type in typeof(DiscordEventArgs).Assembly.GetTypes()
                 .Concat(typeof(CommandExecutedEventArgs).Assembly.GetTypes())
@@ -135,7 +135,8 @@ namespace Disqord.Bot.Extended
             VoiceServerUpdated += HandleEvent;
             WebhooksUpdated += HandleEvent;
 
-            return base.RunAsync(cancellationToken);
+            await this.InitializeServicesAsync();
+            await base.RunAsync(cancellationToken);
         }
 
         public void Log(LogMessageSeverity severity, string message, Exception exception = null)
