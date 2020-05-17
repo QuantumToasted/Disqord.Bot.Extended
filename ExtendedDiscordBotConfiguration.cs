@@ -11,8 +11,9 @@ namespace Disqord.Bot.Extended
         /// <summary>
         /// The base service collection. Add your non-<see cref="Service"/> classes to the collection here.
         /// <para>(Adding an <see cref="ExtendedDiscordBot"/> to this collection is redundant as it will be automatically added.)</para>
+        /// <para>Defaults to an empty <see cref="ServiceCollection"/>.</para>
         /// </summary>
-        public IServiceCollection BaseServiceCollection { get; set; }
+        public IServiceCollection BaseServiceCollection { get; set; } = new ServiceCollection();
 
         /// <summary>
         /// Whether or not events should be handled sequentially on the gateway thread or offloaded into a task queue.
