@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,8 +11,7 @@ namespace Disqord.Bot.Extended
     {
         public static IServiceCollection DiscoverServices(this IServiceCollection collection)
         {
-            foreach (var type in Assembly.GetEntryAssembly().GetTypes()
-                .Where(x => typeof(Service).IsAssignableFrom(x) && !x.IsAbstract))
+            foreach (var type in Assembly.GetEntryAssembly().GetTypes().Where(IsServiceType))
             {
                 collection.AddSingleton(type);
             }
@@ -22,10 +21,9 @@ namespace Disqord.Bot.Extended
 
         public static async Task InitializeServicesAsync(this IServiceProvider provider)
         {
-            foreach (var type in Assembly.GetEntryAssembly().GetTypes()
-                .Where(x => typeof(Service).IsAssignableFrom(x) && !x.IsAbstract))
+            foreach (var type in Assembly.GetEntryAssembly().GetTypes().Where(IsServiceType))
             {
-                await ((Service)provider.GetRequiredService(type)).InitializeAsync();
+                await ((IInitializable) provider.GetRequiredService(type)).InitializeAsync();
             }
         }
 
@@ -38,5 +36,17 @@ namespace Disqord.Bot.Extended
                 yield return (IHandler) provider.GetRequiredService(type);
             }
         }
-    }
-}
+        private static bool IsServiceType(Type type)
+        {
+            while (type != null)
+            {
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Service<>))
+                {
+                    return true;
+                }
+
+                type = type.BaseType;
+            }
+
+            return false;
+        }

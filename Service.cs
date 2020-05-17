@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Disqord.Logging;
 
 namespace Disqord.Bot.Extended
 {
     public abstract class Service<TBot>
+    public abstract class Service<TBot> : IInitializable
         where TBot : ExtendedDiscordBot
     {
         private protected readonly TBot _bot;
