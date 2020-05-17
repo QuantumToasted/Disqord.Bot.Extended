@@ -24,6 +24,22 @@ namespace Disqord.Bot.Extended
             if (_configuration.MessageFilterRegex is { } && _configuration.MessageFilterRegex.IsMatch(e.Message))
                 return;
 
+            switch (e.Severity)
+            {
+                case LogMessageSeverity.Trace when !_configuration.EnableTraceLogSeverity:
+                    return;
+                case LogMessageSeverity.Debug when !_configuration.EnableDebugLogSeverity:
+                    return;
+                case LogMessageSeverity.Information when !_configuration.EnableInformationLogSeverity:
+                    return;
+                case LogMessageSeverity.Warning when !_configuration.EnableWarningLogSeverity:
+                    return;
+                case LogMessageSeverity.Error when !_configuration.EnableErrorLogSeverity:
+                    return;
+                case LogMessageSeverity.Critical when !_configuration.EnableCriticalLogSeverity:
+                    return;
+            }
+
             var message = e.Message;
             if (e.Exception is { })
             {
