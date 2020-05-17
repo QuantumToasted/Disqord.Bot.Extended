@@ -138,7 +138,7 @@ namespace Disqord.Bot.Extended
             await base.RunAsync(cancellationToken);
         }
 
-        public void Log(LogMessageSeverity severity, string message, Exception exception = null)
+        protected void Log(LogMessageSeverity severity, string message, Exception exception = null)
             => Logger.Log(this, new MessageLoggedEventArgs(GetType().Name, severity, message, exception));
 
         public void Log(string source, LogMessageSeverity severity, string message, Exception exception = null)
