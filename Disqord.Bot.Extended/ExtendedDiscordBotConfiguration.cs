@@ -5,7 +5,7 @@ namespace Disqord.Bot.Extended
 {
     public class ExtendedDiscordBotConfiguration : DiscordBotConfiguration
     {
-        [Obsolete("Specifying the provider directly is not supported; use BaseServiceCollection instead.")]
+        [Obsolete("Specifying the provider directly is not supported; use BaseServiceCollection instead.", true)]
         public new Func<DiscordBotBase, IServiceProvider> ProviderFactory { set => throw new NotSupportedException("Specifying the provider directly is not supported; use BaseServiceCollection instead."); }
 
         /// <summary>
