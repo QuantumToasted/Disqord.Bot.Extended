@@ -19,19 +19,7 @@ namespace Disqord.Bot.Extended
         private readonly IDictionary<Type, IEnumerable<IHandler>> _handlerDict; // TODO: Does making this IEnumerable cause multiple enumeration?
 
         protected ExtendedDiscordBot(RestDiscordClient restClient, IPrefixProvider prefixProvider, ExtendedDiscordBotConfiguration configuration = null) 
-            : base(restClient, prefixProvider, configuration is null ? new ExtendedDiscordBotConfiguration() : configuration = new ExtendedDiscordBotConfiguration
-            {
-                Activity = configuration.Activity,
-                CommandServiceConfiguration =  configuration.CommandServiceConfiguration,
-                DefaultMentions = configuration.DefaultMentions,
-                Logger = new Optional<ILogger>(configuration.Logger.GetValueOrDefault() ?? new ExtendedSimpleLogger()),
-                MessageCache = configuration.MessageCache,
-                Serializer = configuration.Serializer,
-                ShardCount = configuration.ShardCount,
-                ShardId = configuration.ShardId,
-                Status = configuration.Status,
-                BaseServiceCollection = configuration.BaseServiceCollection ?? new ServiceCollection()
-            })
+            : base(restClient, prefixProvider, configuration is null ? new ExtendedDiscordBotConfiguration() : configuration.CopyAndConfigure())
         {
             _configuration = configuration ?? new ExtendedDiscordBotConfiguration();
             _handlerDict = new Dictionary<Type, IEnumerable<IHandler>>();
@@ -44,19 +32,7 @@ namespace Disqord.Bot.Extended
         }
 
         protected ExtendedDiscordBot(TokenType tokenType, string token, IPrefixProvider prefixProvider, ExtendedDiscordBotConfiguration configuration = null) 
-            : base(tokenType, token, prefixProvider, configuration is null ? new ExtendedDiscordBotConfiguration() : configuration = new ExtendedDiscordBotConfiguration
-            {
-                Activity = configuration.Activity,
-                CommandServiceConfiguration = configuration.CommandServiceConfiguration,
-                DefaultMentions = configuration.DefaultMentions,
-                Logger = new Optional<ILogger>(configuration.Logger.GetValueOrDefault() ?? new ExtendedSimpleLogger()),
-                MessageCache = configuration.MessageCache,
-                Serializer = configuration.Serializer,
-                ShardCount = configuration.ShardCount,
-                ShardId = configuration.ShardId,
-                Status = configuration.Status,
-                BaseServiceCollection = configuration.BaseServiceCollection ?? new ServiceCollection()
-            })
+            : base(tokenType, token, prefixProvider, configuration is null ? new ExtendedDiscordBotConfiguration() : configuration.CopyAndConfigure())
         {
             _configuration = configuration ?? new ExtendedDiscordBotConfiguration();
             _handlerDict = new Dictionary<Type, IEnumerable<IHandler>>();
@@ -68,12 +44,33 @@ namespace Disqord.Bot.Extended
                     .BuildServiceProvider());
         }
 
+        protected void Log(LogMessageSeverity severity, string message, Exception exception = null)
+            => Logger.Log(this, new MessageLoggedEventArgs(GetType().Name, severity, message, exception));
+
+        public void Log(string source, LogMessageSeverity severity, string message, Exception exception = null)
+            => Logger.Log(this, new MessageLoggedEventArgs(source, severity, message, exception));
+
+        /// <summary>
+        /// Handles hooking events and automatically discovering command modules.
+        /// <para>If overridden in your bot, be sure to call <see langword="base"/>.<see cref="RunAsync()"/> to take advantage of this bot's features.</para>
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public override async Task RunAsync(CancellationToken cancellationToken = new CancellationToken())
         {
+            if (_configuration.ModuleDiscoveryAssembly is { })
+            {
+                var modules = AddModules(_configuration.ModuleDiscoveryAssembly);
+                Log(LogMessageSeverity.Information,
+                    $"Discovered {modules.Count} module(s) under the {_configuration.ModuleDiscoveryAssembly.GetName().Name} assembly.");
+            }
+
             foreach (var type in typeof(DiscordEventArgs).Assembly.GetTypes()
                 .Concat(typeof(CommandExecutedEventArgs).Assembly.GetTypes())
                 .Where(x => typeof(EventArgs).IsAssignableFrom(x) && !x.IsAbstract))
             {
+                Log(LogMessageSeverity.Debug,
+                    $"Created an event handler entry for type {type.FullName}.");
                 _handlerDict[type] = this.GetHandlers(type);
             }
 
@@ -139,11 +136,40 @@ namespace Disqord.Bot.Extended
             await base.RunAsync(cancellationToken);
         }
 
-        protected void Log(LogMessageSeverity severity, string message, Exception exception = null)
-            => Logger.Log(this, new MessageLoggedEventArgs(GetType().Name, severity, message, exception));
+        /// <summary>
+        /// Handles post-command execution. If overridden in your bot, be sure to call <see langword="base"/>.<see cref="AfterExecutedAsync()"/>.
+        /// </summary>
+        protected override ValueTask AfterExecutedAsync(IResult _, DiscordCommandContext context)
+        {
+            if (!(_ is DiscordCommandResult result)) return new ValueTask();
+            return SendResultAsync(result, context);
+        }
 
-        public void Log(string source, LogMessageSeverity severity, string message, Exception exception = null)
-            => Logger.Log(this, new MessageLoggedEventArgs(source, severity, message, exception));
+        /// <summary>
+        /// Sends <see cref="DiscordCommandResult"/>s returned from commands to the channel the command was used in.
+        /// </summary>
+        /// <param name="result">The result returned from the executed command.</param>
+        /// <param name="context">The context of the executed command.</param>
+        protected virtual async ValueTask SendResultAsync(DiscordCommandResult result, DiscordCommandContext context)
+        {
+            Log(LogMessageSeverity.Information,
+                $"Command [{result.Command.FullAliases[0]}] was executed by user [{context.User}]");
+
+            if (result.Attachment is { })
+            {
+                using (result.Attachment)
+                {
+                    await context.Channel.SendMessageAsync(result.Attachment, result.Text, embed: result.Embed);
+                    return;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(result.Text) || result.Embed is { })
+            {
+                await context.Channel.SendMessageAsync(result.Text, embed: result.Embed);
+            }
+        }
+
 
         // TODO: Performance
         private Task HandleEvent<TArgs>(TArgs args)

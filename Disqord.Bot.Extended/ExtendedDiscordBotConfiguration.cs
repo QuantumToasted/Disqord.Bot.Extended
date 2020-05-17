@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using Disqord.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Disqord.Bot.Extended
@@ -20,5 +22,29 @@ namespace Disqord.Bot.Extended
         /// <para>Defaults to <see langword="true"/>.</para>
         /// </summary>
         public bool RunHandlersOnGatewayThread { get; set; } = true;
+
+        /// <summary>
+        /// The <see cref="Assembly"/> to automatically discover command modules from.
+        /// <para>Use <see cref="Assembly.GetEntryAssembly()"/> if unsure.</para>
+        /// </summary>
+        public Assembly ModuleDiscoveryAssembly { get; set; }
+
+        internal ExtendedDiscordBotConfiguration CopyAndConfigure()
+        {
+            return new ExtendedDiscordBotConfiguration
+            {
+                ModuleDiscoveryAssembly = ModuleDiscoveryAssembly,
+                Activity = Activity,
+                CommandServiceConfiguration = CommandServiceConfiguration,
+                DefaultMentions = DefaultMentions,
+                Logger = new Optional<ILogger>(Logger.GetValueOrDefault() ?? new ExtendedSimpleLogger()),
+                MessageCache = MessageCache,
+                Serializer = Serializer,
+                ShardCount = ShardCount,
+                ShardId = ShardId,
+                Status = Status,
+                BaseServiceCollection = BaseServiceCollection ?? new ServiceCollection()
+            };
+        }
     }
 }
