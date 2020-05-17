@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -135,6 +135,7 @@ namespace Disqord.Bot.Extended
             WebhooksUpdated += HandleEvent;
 
             await this.InitializeServicesAsync();
+            this.StartSchedules();
             await base.RunAsync(cancellationToken);
         }
 

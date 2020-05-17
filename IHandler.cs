@@ -1,13 +1,18 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace Disqord.Bot.Extended
 {
+    /// <summary>
+    /// A marker interface for event handlers internally. Use <see cref="IHandler{TArgs}"/> instead.
+    /// </summary>
     public interface IHandler
     { }
 
-    public interface IHandler<in T1> : IHandler
-        where T1 : EventArgs
+    /// <summary>
+    /// Defines a handler for a specific type of event fired by a <see cref="ExtendedDiscordBot"/>.
+    /// </summary>
+    /// <typeparam name="TArgs">Any <see cref="EventArgs"/> which exists under the Disqord or Qmmands namespace.</typeparam>
     public interface IHandler<in TArgs> : IHandler
         where TArgs : EventArgs
     {

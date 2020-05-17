@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -36,6 +36,15 @@ namespace Disqord.Bot.Extended
                 yield return (IHandler) provider.GetRequiredService(type);
             }
         }
+
+        public static void StartSchedules(this IServiceProvider provider)
+        {
+            foreach (var type in Assembly.GetEntryAssembly().GetTypes().Where(IsScheduledServiceType))
+            {
+                ((ScheduledService) provider.GetRequiredService(type)).Start();
+            }
+        }
+
         private static bool IsServiceType(Type type)
         {
             while (type != null)
@@ -50,3 +59,20 @@ namespace Disqord.Bot.Extended
 
             return false;
         }
+
+        private static bool IsScheduledServiceType(Type type)
+        {
+            while (type != null)
+            {
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ScheduledService<>) && !type.IsAbstract)
+                {
+                    return true;
+                }
+
+                type = type.BaseType;
+            }
+
+            return false;
+        }
+    }
+}
