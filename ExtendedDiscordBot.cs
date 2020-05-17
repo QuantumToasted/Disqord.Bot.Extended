@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Disqord.Bot.Prefixes;
@@ -35,8 +36,7 @@ namespace Disqord.Bot.Extended
             _configuration = configuration ?? new ExtendedDiscordBotConfiguration();
             _handlerDict = new Dictionary<Type, IEnumerable<IHandler>>();
 
-            // overrides the serviceprovider
-            GetType().GetField("_provider").SetValue(this,
+            typeof(DiscordBotBase).GetField("_provider", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this,
                 _configuration.BaseServiceCollection
                     .AddSingleton(GetType(), this)
                     .DiscoverServices()
@@ -61,8 +61,7 @@ namespace Disqord.Bot.Extended
             _configuration = configuration ?? new ExtendedDiscordBotConfiguration();
             _handlerDict = new Dictionary<Type, IEnumerable<IHandler>>();
 
-            // overrides the serviceprovider
-            GetType().GetField("_provider").SetValue(this,
+            typeof(DiscordBotBase).GetField("_provider", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this,
                 _configuration.BaseServiceCollection
                     .AddSingleton(GetType(), this)
                     .DiscoverServices()
