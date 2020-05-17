@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -18,7 +18,7 @@ namespace Disqord.Bot.Extended
         private readonly IDictionary<Type, IEnumerable<IHandler>> _handlerDict; // TODO: Does making this IEnumerable cause multiple enumeration?
 
         protected ExtendedDiscordBot(RestDiscordClient restClient, IPrefixProvider prefixProvider, ExtendedDiscordBotConfiguration configuration = null) 
-            : base(restClient, prefixProvider, configuration is null ? new ExtendedDiscordBotConfiguration() : new ExtendedDiscordBotConfiguration
+            : base(restClient, prefixProvider, configuration is null ? new ExtendedDiscordBotConfiguration() : configuration = new ExtendedDiscordBotConfiguration
             {
                 Activity = configuration.Activity,
                 CommandServiceConfiguration =  configuration.CommandServiceConfiguration,
@@ -32,7 +32,7 @@ namespace Disqord.Bot.Extended
                 BaseServiceCollection = configuration.BaseServiceCollection ?? new ServiceCollection()
             })
         {
-            _configuration ??= new ExtendedDiscordBotConfiguration();
+            _configuration = configuration ?? new ExtendedDiscordBotConfiguration();
             _handlerDict = new Dictionary<Type, IEnumerable<IHandler>>();
 
             // overrides the serviceprovider
@@ -44,7 +44,7 @@ namespace Disqord.Bot.Extended
         }
 
         protected ExtendedDiscordBot(TokenType tokenType, string token, IPrefixProvider prefixProvider, ExtendedDiscordBotConfiguration configuration = null) 
-            : base(tokenType, token, prefixProvider, configuration is null ? new ExtendedDiscordBotConfiguration() : new ExtendedDiscordBotConfiguration
+            : base(tokenType, token, prefixProvider, configuration is null ? new ExtendedDiscordBotConfiguration() : configuration = new ExtendedDiscordBotConfiguration
             {
                 Activity = configuration.Activity,
                 CommandServiceConfiguration = configuration.CommandServiceConfiguration,
@@ -58,7 +58,7 @@ namespace Disqord.Bot.Extended
                 BaseServiceCollection = configuration.BaseServiceCollection ?? new ServiceCollection()
             })
         {
-            _configuration ??= new ExtendedDiscordBotConfiguration();
+            _configuration = configuration ?? new ExtendedDiscordBotConfiguration();
             _handlerDict = new Dictionary<Type, IEnumerable<IHandler>>();
 
             // overrides the serviceprovider
