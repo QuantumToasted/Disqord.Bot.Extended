@@ -16,6 +16,6 @@ namespace Disqord.Bot.Extended
     public interface IHandler<in TArgs> : IHandler
         where TArgs : EventArgs
     {
-        ValueTask HandleAsync(TArgs args);
+        ValueTask HandleAsync(TArgs e);
     }
 }

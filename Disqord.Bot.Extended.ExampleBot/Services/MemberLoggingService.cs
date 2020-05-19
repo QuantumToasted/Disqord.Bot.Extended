@@ -12,18 +12,18 @@ namespace Disqord.Bot.Extended.ExampleBot
             : base(bot)
         { }
 
-        public ValueTask HandleAsync(MemberLeftEventArgs args)
+        public ValueTask HandleAsync(MemberLeftEventArgs e)
         {
             _bot.Log("MemberLogging", LogMessageSeverity.Information, 
-                $"Member {args.User} left guild {args.Guild.Name}.");
+                $"Member {e.User} left guild {e.Guild.Name}.");
 
             return new ValueTask();
         }
 
-        public ValueTask HandleAsync(MemberJoinedEventArgs args)
+        public ValueTask HandleAsync(MemberJoinedEventArgs e)
         {
             _bot.Log("MemberLogging", LogMessageSeverity.Information,
-                $"Member {args.Member} joined guild {args.Member.Guild.Name}.");
+                $"Member {e.Member} joined guild {e.Member.Guild.Name}.");
 
             return new ValueTask();
         }
