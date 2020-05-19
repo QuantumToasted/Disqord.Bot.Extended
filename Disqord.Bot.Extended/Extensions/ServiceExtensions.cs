@@ -41,7 +41,7 @@ namespace Disqord.Bot.Extended
         {
             foreach (var type in Assembly.GetEntryAssembly().GetTypes().Where(IsScheduledServiceType))
             {
-                ((ScheduledService) provider.GetRequiredService(type)).Start();
+                ((IStartable) provider.GetRequiredService(type)).Start();
             }
         }
 
@@ -64,7 +64,7 @@ namespace Disqord.Bot.Extended
         {
             while (type != null)
             {
-                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ScheduledService<>) && !type.IsAbstract)
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ScheduledService<>))
                 {
                     return true;
                 }

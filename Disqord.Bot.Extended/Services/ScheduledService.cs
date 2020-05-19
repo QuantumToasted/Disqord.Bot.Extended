@@ -12,7 +12,7 @@ namespace Disqord.Bot.Extended
     /// The type of bot to pass into the service via Dependency Injection.
     /// <para>Should match your custom inherited <see cref="ExtendedDiscordBot"/> type.</para> 
     /// </typeparam>
-    public abstract class ScheduledService<TBot> : Service<TBot>
+    public abstract class ScheduledService<TBot> : Service<TBot>, IStartable
         where TBot : ExtendedDiscordBot
     {
         private CancellationTokenSource _tokenSource;
@@ -38,7 +38,7 @@ namespace Disqord.Bot.Extended
         /// </summary>
         protected abstract TimeSpan Interval { get; }
 
-        internal void Start()
+        public void Start()
         {
             _tokenSource = new CancellationTokenSource(Interval);
 
