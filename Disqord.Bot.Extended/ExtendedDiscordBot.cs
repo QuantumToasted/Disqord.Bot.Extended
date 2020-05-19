@@ -13,7 +13,7 @@ using Qmmands;
 
 namespace Disqord.Bot.Extended
 {
-    public abstract class ExtendedDiscordBot : DiscordBot
+    public class ExtendedDiscordBot : DiscordBot
     {
         private readonly ExtendedDiscordBotConfiguration _configuration;
         private readonly IDictionary<Type, IEnumerable<IHandler>> _handlerDict; // TODO: Does making this IEnumerable cause multiple enumeration?
