@@ -71,7 +71,7 @@ This option is where you would define the assembly in which your command modules
 #### ExtendedSimpleLogger
 
 This is a simple console and file logger which is meant to be a direct drop-in right into the bot via the `Logger` property on the configuration class. If no logger is passed to the bot, this logger will be used along with all of its default values. The configuration file is completely documented, so if you wish to learn about the details of the options, feel free to check those out. Here is a barebones example of what the logger looks like starting up (with the settings in the `ExampleBot` project):
-**TODO: ADD IMAGE HERE**
+![Example logger image](https://i.imgur.com/Z17JBBs.png)
 
 
 #### Service / Service\<TBot>
