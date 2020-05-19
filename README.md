@@ -56,7 +56,7 @@ As the bot handles automatic discovery of your user-defined services via `Servic
 public bool RunHandlersOnGatewayThread { get; set; } = true;
 ```
 
-This option allows any class which implements `IHandler<TArgs>` to have its handling methods offloaded from the gateway thread via `Task.Run()` - this is not enabled by default as it could introduce possible race conditions or lead to a stale client cache (depending on how long your handlers run) - however if you don't care, the option exists. Each client event will run all handlers for that event before handling the *next* event.
+This option allows any class which implements `IHandler<TArgs>` to have its handling methods offloaded from the gateway thread via `Task.Run()` when set to `false` - this is disabled by default as it could introduce possible race conditions or lead to a stale client cache (depending on how long your handlers run) - however if you don't care, the option exists. Each client event will run all handlers for that event before handling the *next* event.
 
 
 
