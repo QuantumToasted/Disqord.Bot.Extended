@@ -157,4 +157,4 @@ public class MyModule : ExtendedDiscordModule<ExampleBot>
 ```
 
 This command will cause the bot to reply with whatever text was passed to the command!
-**Note: Similar to Service\<T>, `ExtendedDiscordModuleBase` on its own is a shortcut for `ExtendedDiscordModuleBase\<DiscordCommandContext>`. If you have your own extension of `DiscordCommandContext`, supply it as the `TContext` instead of using the generic-less version.*
+**Note: Similar to Service\<T>, `ExtendedDiscordModuleBase` on its own is a shortcut for `ExtendedDiscordModuleBase<DiscordCommandContext>`. If you have your own extension of `DiscordCommandContext`, supply it as the `TContext` instead of using the generic-less version.*
