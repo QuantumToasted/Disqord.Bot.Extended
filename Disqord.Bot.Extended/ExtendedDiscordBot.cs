@@ -17,6 +17,7 @@ namespace Disqord.Bot.Extended
     {
         private readonly ExtendedDiscordBotConfiguration _configuration;
         private readonly IDictionary<Type, IEnumerable<IHandler>> _handlerDict; // TODO: Does making this IEnumerable cause multiple enumeration?
+        private bool _firstReady;
 
         protected ExtendedDiscordBot(RestDiscordClient restClient, IPrefixProvider prefixProvider, ExtendedDiscordBotConfiguration configuration = null) 
             : base(restClient, prefixProvider, configuration is null ? new ExtendedDiscordBotConfiguration() : configuration.CopyAndConfigure())
@@ -75,7 +76,7 @@ namespace Disqord.Bot.Extended
             }
 
             // Misc
-            Ready += HandleEvent;
+            Ready += HandleReady;
             CommandExecutionFailed += HandleEvent;
             CommandExecuted += HandleEvent;
             InviteCreated += HandleEvent;
@@ -131,9 +132,19 @@ namespace Disqord.Bot.Extended
             VoiceServerUpdated += HandleEvent;
             WebhooksUpdated += HandleEvent;
 
-            await this.InitializeServicesAsync();
-            this.StartSchedules();
             await base.RunAsync(cancellationToken);
+        }
+
+        private async Task HandleReady(ReadyEventArgs args)
+        {
+            if (!_firstReady)
+            {
+                _firstReady = true;
+                this.StartSchedules();
+                await this.InitializeServicesAsync();
+            }
+
+            await HandleEvent(args);
         }
 
         /// <summary>
