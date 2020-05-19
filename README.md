@@ -32,7 +32,7 @@ public sealed class ExampleBot : ExtendedDiscordBot
                 EnableDebugLogSeverity = false
             })
         })
-	{ }
+    { }
 }
 ```
 
@@ -53,7 +53,7 @@ As the bot handles automatic discovery of your user-defined services via `Servic
 
 
 ```cs
- public bool RunHandlersOnGatewayThread { get; set; } = true;
+public bool RunHandlersOnGatewayThread { get; set; } = true;
 ```
 
 This option allows any class which implements `IHandler<TArgs>` to have its handling methods offloaded from the gateway thread via `Task.Run()` - this is not enabled by default as it could introduce possible race conditions or lead to a stale client cache (depending on how long your handlers run) - however if you don't care, the option exists. Each client event will run all handlers for that event before handling the *next* event.
@@ -82,7 +82,7 @@ All you need to do to add your service is...
 ```cs
 public class MyService : Service<ExampleBot>
 {
-	public MyService(ExampleBot bot)
+    public MyService(ExampleBot bot)
         : base(bot)
     { }
 }
@@ -124,7 +124,7 @@ This interface is designed to be coupled with your `Service<TBot>` classes, defi
 ```cs
 public class MemberStateHandler : IHandler<MemberLeftEventArgs>, IHandler<MemberJoinedEventArgs>
 {
-	public ValueTask HandleAsync(MemberLeftEventArgs e)
+    public ValueTask HandleAsync(MemberLeftEventArgs e)
     {
         Console.WriteLine($"Member {e.User} left guild {e.Guild.Name}.");
         return new ValueTask();
@@ -150,9 +150,9 @@ These two classes are meant to take full advantage of Qmmands' `CommandResult` p
 ```cs
 public class MyModule : ExtendedDiscordModule<ExampleBot>
 {
-	[Command("echo")]
-	public DiscordCommandResult Echo([Remainder] string text)
-		=> Success(text);
+    [Command("echo")]
+    public DiscordCommandResult Echo([Remainder] string text)
+        => Success(text);
 }
 ```
 
