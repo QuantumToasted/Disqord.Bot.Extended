@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Reflection;
+using Disqord.Bot.Sharding;
 using Disqord.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Disqord.Bot.Extended
 {
-    public class ExtendedDiscordBotConfiguration : DiscordBotConfiguration
+    public class ExtendedDiscordBotSharderConfiguration : DiscordBotSharderConfiguration
     {
         [Obsolete("Specifying the provider directly is not supported; use BaseServiceCollection instead.", true)]
         public new Func<DiscordBotBase, IServiceProvider> ProviderFactory { set => throw new NotSupportedException("Specifying the provider directly is not supported; use BaseServiceCollection instead."); }
@@ -31,9 +32,9 @@ namespace Disqord.Bot.Extended
 
         public new static ExtendedDiscordBotConfiguration Default => new ExtendedDiscordBotConfiguration();
 
-        internal ExtendedDiscordBotConfiguration CopyAndConfigure()
+        internal ExtendedDiscordBotSharderConfiguration CopyAndConfigure()
         {
-            return new ExtendedDiscordBotConfiguration
+            return new ExtendedDiscordBotSharderConfiguration
             {
                 ModuleDiscoveryAssembly = ModuleDiscoveryAssembly,
                 Activity = Activity,
@@ -43,7 +44,6 @@ namespace Disqord.Bot.Extended
                 MessageCache = MessageCache,
                 Serializer = Serializer,
                 ShardCount = ShardCount,
-                ShardId = ShardId,
                 Status = Status,
                 BaseServiceCollection = BaseServiceCollection ?? new ServiceCollection()
             };

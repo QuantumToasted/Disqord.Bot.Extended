@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Disqord.Bot.Prefixes;
+using Disqord.Bot.Sharding;
 using Disqord.Events;
 using Disqord.Logging;
 using Disqord.Rest;
@@ -13,14 +14,15 @@ using Qmmands;
 
 namespace Disqord.Bot.Extended
 {
-    public class ExtendedDiscordBot : DiscordBot
+    // TODO: Is there a way to implement this that isn't just copy/pasting ExtendedDiscordBot?
+    public class ExtendedDiscordBotSharder : DiscordBotSharder
     {
-        private readonly ExtendedDiscordBotConfiguration _configuration;
+        private readonly ExtendedDiscordBotSharderConfiguration _configuration;
         private readonly IDictionary<Type, IEnumerable<IHandler>> _handlerDict; // TODO: Does making this IEnumerable cause multiple enumeration?
         private bool _firstReady;
 
-        protected ExtendedDiscordBot(RestDiscordClient restClient, IPrefixProvider prefixProvider, ExtendedDiscordBotConfiguration configuration = null) 
-            : base(restClient, prefixProvider, configuration?.CopyAndConfigure() ?? new ExtendedDiscordBotConfiguration())
+        public ExtendedDiscordBotSharder(TokenType tokenType, string token, IPrefixProvider prefixProvider, ExtendedDiscordBotSharderConfiguration configuration = null) 
+            : base(tokenType, token, prefixProvider, configuration?.CopyAndConfigure() ?? new ExtendedDiscordBotSharderConfiguration())
         {
             _configuration = configuration;
             _handlerDict = new Dictionary<Type, IEnumerable<IHandler>>();
@@ -32,8 +34,8 @@ namespace Disqord.Bot.Extended
                     .BuildServiceProvider());
         }
 
-        protected ExtendedDiscordBot(TokenType tokenType, string token, IPrefixProvider prefixProvider, ExtendedDiscordBotConfiguration configuration = null) 
-            : base(tokenType, token, prefixProvider, configuration?.CopyAndConfigure() ?? new ExtendedDiscordBotConfiguration())
+        public ExtendedDiscordBotSharder(RestDiscordClient restClient, IPrefixProvider prefixProvider, ExtendedDiscordBotSharderConfiguration configuration = null) 
+            : base(restClient, prefixProvider, configuration?.CopyAndConfigure() ?? new ExtendedDiscordBotSharderConfiguration())
         {
             _configuration = configuration;
             _handlerDict = new Dictionary<Type, IEnumerable<IHandler>>();
@@ -82,6 +84,7 @@ namespace Disqord.Bot.Extended
             InviteCreated += HandleEvent;
             InviteDeleted += HandleEvent;
             PresenceUpdated += HandleEvent;
+            ShardReady += HandleEvent;
 
             // User token
             // MessageAcknowledged += HandleEventAsync;
@@ -186,7 +189,7 @@ namespace Disqord.Bot.Extended
         private Task HandleEvent<TArgs>(TArgs args)
             where TArgs : EventArgs
         {
-            if (!_configuration.RunHandlersOnGatewayThread) 
+            if (!_configuration.RunHandlersOnGatewayThread)
                 return ProcessHandlersAsync(args);
 
             _ = Task.Run(async () => await ProcessHandlersAsync(args));
@@ -201,7 +204,7 @@ namespace Disqord.Bot.Extended
             {
                 try
                 {
-                    await ((IHandler<TArgs>) handler).HandleAsync(args);
+                    await ((IHandler<TArgs>)handler).HandleAsync(args);
                 }
                 catch (Exception ex)
                 {
