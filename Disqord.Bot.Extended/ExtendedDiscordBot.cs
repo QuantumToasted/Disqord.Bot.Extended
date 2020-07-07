@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Disqord.Bot.Prefixes;
+using Disqord.Bot.Sharding;
 using Disqord.Events;
 using Disqord.Logging;
 using Disqord.Rest;
@@ -13,7 +14,10 @@ using Qmmands;
 
 namespace Disqord.Bot.Extended
 {
-    public class ExtendedDiscordBot : DiscordBot
+    /// <summary>
+    /// An extendable but also extended Discord bot. This bot is sharded by default, so there is not a Sharded equivalent.
+    /// </summary>
+    public class ExtendedDiscordBot : DiscordBotSharder
     {
         private readonly ExtendedDiscordBotConfiguration _configuration;
         private readonly IDictionary<Type, IEnumerable<IHandler>> _handlerDict; // TODO: Does making this IEnumerable cause multiple enumeration?
