@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -209,7 +209,7 @@ namespace Disqord.Bot.Extended
                 }
                 catch (Exception ex)
                 {
-                    Log(LogMessageSeverity.Error, "An exception occurred handling this event type.", ex);
+                    Log(typeof(TArgs).Name.Replace("EventArgs", ""), LogMessageSeverity.Error, "An exception occurred handling this event type.", ex);
                 }
             }
         }
