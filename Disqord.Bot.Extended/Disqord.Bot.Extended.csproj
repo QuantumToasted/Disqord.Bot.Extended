@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
-    <Version>1.0.1</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
+    <PackageReleaseNotes>Updated dependencies.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Disqord.Bot" Version="1.0.0-nightly-00068" />
+    <PackageReference Include="Disqord.Bot" Version="1.0.0-nightly-00078" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.4" />
   </ItemGroup>
 

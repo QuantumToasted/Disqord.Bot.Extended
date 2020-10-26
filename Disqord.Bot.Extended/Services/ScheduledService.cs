@@ -55,7 +55,7 @@ namespace Disqord.Bot.Extended
             }
             catch (Exception ex)
             {
-                _bot.Log(GetType().Name, LogMessageSeverity.Error, "An exception occurred running a scheduled task.",
+                _bot.Log(GetType().Name, LogSeverity.Error, "An exception occurred running a scheduled task.",
                     ex);
             }
 
