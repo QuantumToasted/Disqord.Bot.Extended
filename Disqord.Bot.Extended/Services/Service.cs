@@ -30,7 +30,7 @@ namespace Disqord.Bot.Extended
         /// <returns></returns>
         public virtual ValueTask InitializeAsync()
         {
-            _bot.Log(GetType().Name, LogMessageSeverity.Information, "Service initialized.");
+            _bot.Log(GetType().Name, LogSeverity.Information, "Service initialized.");
             return new ValueTask();
         }
     }

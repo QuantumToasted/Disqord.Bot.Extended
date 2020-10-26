@@ -19,24 +19,24 @@ namespace Disqord.Bot.Extended
                 Directory.CreateDirectory(_configuration.LogDirectory);
         }
 
-        public virtual void Log(object sender, MessageLoggedEventArgs e)
+        public virtual void Log(object sender, LogEventArgs e)
         {
             if (_configuration.MessageFilterRegex is { } && _configuration.MessageFilterRegex.IsMatch(e.Message))
                 return;
 
             switch (e.Severity)
             {
-                case LogMessageSeverity.Trace when !_configuration.EnableTraceLogSeverity:
+                case LogSeverity.Trace when !_configuration.EnableTraceLogSeverity:
                     return;
-                case LogMessageSeverity.Debug when !_configuration.EnableDebugLogSeverity:
+                case LogSeverity.Debug when !_configuration.EnableDebugLogSeverity:
                     return;
-                case LogMessageSeverity.Information when !_configuration.EnableInformationLogSeverity:
+                case LogSeverity.Information when !_configuration.EnableInformationLogSeverity:
                     return;
-                case LogMessageSeverity.Warning when !_configuration.EnableWarningLogSeverity:
+                case LogSeverity.Warning when !_configuration.EnableWarningLogSeverity:
                     return;
-                case LogMessageSeverity.Error when !_configuration.EnableErrorLogSeverity:
+                case LogSeverity.Error when !_configuration.EnableErrorLogSeverity:
                     return;
-                case LogMessageSeverity.Critical when !_configuration.EnableCriticalLogSeverity:
+                case LogSeverity.Critical when !_configuration.EnableCriticalLogSeverity:
                     return;
             }
 
@@ -72,27 +72,27 @@ namespace Disqord.Bot.Extended
             }
         }
 
-        private void LogLine(string source, LogMessageSeverity severity, string message)
+        private void LogLine(string source, LogSeverity severity, string message)
         {
             (ConsoleColor? background, ConsoleColor? foreground) = severity switch
             {
-                LogMessageSeverity.Trace => (_configuration.TraceBackgroundColor, _configuration.TraceForegroundColor),
-                LogMessageSeverity.Debug => (_configuration.DebugBackgroundColor, _configuration.DebugForegroundColor),
-                LogMessageSeverity.Information => (_configuration.InformationBackgroundColor, _configuration.InformationForegroundColor),
-                LogMessageSeverity.Warning => (_configuration.WarningBackgroundColor, _configuration.WarningForegroundColor),
-                LogMessageSeverity.Error => (_configuration.ErrorBackgroundColor, _configuration.ErrorForegroundColor),
-                LogMessageSeverity.Critical => (_configuration.CriticalBackgroundColor, _configuration.CriticalForegroundColor),
+                LogSeverity.Trace => (_configuration.TraceBackgroundColor, _configuration.TraceForegroundColor),
+                LogSeverity.Debug => (_configuration.DebugBackgroundColor, _configuration.DebugForegroundColor),
+                LogSeverity.Information => (_configuration.InformationBackgroundColor, _configuration.InformationForegroundColor),
+                LogSeverity.Warning => (_configuration.WarningBackgroundColor, _configuration.WarningForegroundColor),
+                LogSeverity.Error => (_configuration.ErrorBackgroundColor, _configuration.ErrorForegroundColor),
+                LogSeverity.Critical => (_configuration.CriticalBackgroundColor, _configuration.CriticalForegroundColor),
                 _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, null)
             };
 
             var level = severity switch
             {
-                LogMessageSeverity.Trace => _configuration.TraceLevelText ?? "Trace",
-                LogMessageSeverity.Debug => _configuration.DebugLevelText ?? "Debug",
-                LogMessageSeverity.Information => _configuration.InformationLevelText ?? "Information",
-                LogMessageSeverity.Warning => _configuration.WarningLevelText ?? "Warning",
-                LogMessageSeverity.Error => _configuration.ErrorLevelText ?? "Error",
-                LogMessageSeverity.Critical => _configuration.CriticalLevelText ?? "Critical",
+                LogSeverity.Trace => _configuration.TraceLevelText ?? "Trace",
+                LogSeverity.Debug => _configuration.DebugLevelText ?? "Debug",
+                LogSeverity.Information => _configuration.InformationLevelText ?? "Information",
+                LogSeverity.Warning => _configuration.WarningLevelText ?? "Warning",
+                LogSeverity.Error => _configuration.ErrorLevelText ?? "Error",
+                LogSeverity.Critical => _configuration.CriticalLevelText ?? "Critical",
                 _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, null)
             };
 
@@ -115,7 +115,7 @@ namespace Disqord.Bot.Extended
             Console.ResetColor();
         }
 
-        private void LogToFile(string source, LogMessageSeverity severity, string message)
+        private void LogToFile(string source, LogSeverity severity, string message)
         {
             var now = DateTimeOffset.Now;
             var path = Path.Join(_configuration.LogDirectory, $"{now:MMddyyyy}.log");
@@ -123,12 +123,12 @@ namespace Disqord.Bot.Extended
 
             var level = severity switch
             {
-                LogMessageSeverity.Trace => _configuration.TraceLevelText ?? "Trace",
-                LogMessageSeverity.Debug => _configuration.DebugLevelText ?? "Debug",
-                LogMessageSeverity.Information => _configuration.InformationLevelText ?? "Information",
-                LogMessageSeverity.Warning => _configuration.WarningLevelText ?? "Warning",
-                LogMessageSeverity.Error => _configuration.ErrorLevelText ?? "Error",
-                LogMessageSeverity.Critical => _configuration.CriticalLevelText ?? "Critical",
+                LogSeverity.Trace => _configuration.TraceLevelText ?? "Trace",
+                LogSeverity.Debug => _configuration.DebugLevelText ?? "Debug",
+                LogSeverity.Information => _configuration.InformationLevelText ?? "Information",
+                LogSeverity.Warning => _configuration.WarningLevelText ?? "Warning",
+                LogSeverity.Error => _configuration.ErrorLevelText ?? "Error",
+                LogSeverity.Critical => _configuration.CriticalLevelText ?? "Critical",
                 _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, null)
             };
 
@@ -136,11 +136,13 @@ namespace Disqord.Bot.Extended
         }
 
         // Hide(?) the event, as it is not used by this logger at all.
-        // TODO: Copy DefaultLogger from DQ and implement it in Log, instead of hiding this event.
-        event EventHandler<MessageLoggedEventArgs> ILogger.MessageLogged
+        event EventHandler<LogEventArgs> ILogger.Logged
         {
-            add => throw new NotSupportedException("Subscribing to the MessageLogged event is not supported, as it will never be invoked internally.");
+            add => throw new NotSupportedException("To use ExtendedSimpleLogger, set your bot's Logger instead of using the event.");
             remove => throw new NotSupportedException();
         }
+
+        void IDisposable.Dispose()
+        { }
     }
 }

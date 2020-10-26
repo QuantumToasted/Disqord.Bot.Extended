@@ -26,7 +26,7 @@ namespace Disqord.Bot.Extended.ExampleBot
         protected override async ValueTask InvokeAsync()
         {
             var activity = _activities[_random.Next(_activities.Count)];
-            _bot.Log("CyclingActivity", LogMessageSeverity.Information,
+            _bot.Log("CyclingActivity", LogSeverity.Information,
                 $"Setting activity to: {activity.Type} {activity.Name}");
 
             await _bot.SetPresenceAsync(activity);

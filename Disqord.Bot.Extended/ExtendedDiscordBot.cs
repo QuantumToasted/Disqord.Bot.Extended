@@ -49,11 +49,11 @@ namespace Disqord.Bot.Extended
                     .BuildServiceProvider());
         }
 
-        protected void Log(LogMessageSeverity severity, string message, Exception exception = null)
-            => Logger.Log(this, new MessageLoggedEventArgs(GetType().Name, severity, message, exception));
+        protected void Log(LogSeverity severity, string message, Exception exception = null)
+            => Logger.Log(this, new LogEventArgs(GetType().Name, severity, message, exception));
 
-        public void Log(string source, LogMessageSeverity severity, string message, Exception exception = null)
-            => Logger.Log(this, new MessageLoggedEventArgs(source, severity, message, exception));
+        public void Log(string source, LogSeverity severity, string message, Exception exception = null)
+            => Logger.Log(this, new LogEventArgs(source, severity, message, exception));
 
         /// <summary>
         /// Handles hooking events and automatically discovering command modules.
@@ -66,7 +66,7 @@ namespace Disqord.Bot.Extended
             if (_configuration.ModuleDiscoveryAssembly is { })
             {
                 var modules = AddModules(_configuration.ModuleDiscoveryAssembly);
-                Log(LogMessageSeverity.Information,
+                Log(LogSeverity.Information,
                     $"Discovered {modules.Count} module(s) under the {_configuration.ModuleDiscoveryAssembly.GetName().Name} assembly.");
             }
 
@@ -74,7 +74,7 @@ namespace Disqord.Bot.Extended
                 .Concat(typeof(CommandExecutedEventArgs).Assembly.GetTypes())
                 .Where(x => typeof(EventArgs).IsAssignableFrom(x) && !x.IsAbstract))
             {
-                Log(LogMessageSeverity.Debug,
+                Log(LogSeverity.Debug,
                     $"Created an event handler entry for type {type.FullName}.");
                 _handlerDict[type] = this.GetHandlers(type);
             }
@@ -167,7 +167,7 @@ namespace Disqord.Bot.Extended
         /// <param name="context">The context of the executed command.</param>
         protected virtual async ValueTask SendResultAsync(DiscordCommandResult result, DiscordCommandContext context)
         {
-            Log(LogMessageSeverity.Information,
+            Log(LogSeverity.Information,
                 $"Command [{result.Command.FullAliases[0]}] was executed by user [{context.User}]");
 
             if (result.Attachment is { })
@@ -209,7 +209,7 @@ namespace Disqord.Bot.Extended
                 }
                 catch (Exception ex)
                 {
-                    Log(typeof(TArgs).Name.Replace("EventArgs", ""), LogMessageSeverity.Error, "An exception occurred handling this event type.", ex);
+                    Log(typeof(TArgs).Name.Replace("EventArgs", ""), LogSeverity.Error, "An exception occurred handling this event type.", ex);
                 }
             }
         }
