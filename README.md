@@ -1,3 +1,6 @@
+# NOTICE
+Disqord.Bot has implemented most or all of these features in one way or another. There is no reason to use this project and it likely does not or will not work with any future versions of it. On top of that, old versions of Disqord.Bot were purged entirely during a restructuring of package naming schemes so the versions this is supported with likely do not exist either.
+
 # Disqord.Bot.Extended
 An extension of [Disqord.Bot](https://github.com/Quahu/Disqord/tree/master/src/Disqord.Bot) designed with streamlining and simplifying bot creation and deployment, reducing the amount of boilerplate and duplicate code needed, especially when developing multiple bots.
 Want to try it? Get it from my personal MyGet feed: https://www.myget.org/F/kuromu/api/v3/index.json
